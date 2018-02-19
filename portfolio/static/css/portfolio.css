@@ -1,0 +1,26 @@
+
+.body_own {
+
+}
+
+h1 {
+    color: #FCA205;
+    font-family: 'cursive';
+}
+
+.table_own{
+    width: 80%;
+    margin-bottom: 20px;
+    margin-left:10%;
+    margin-right:10%;
+}
+
+.title{
+    background-color: #85bb65;
+}
+
+#chart{
+    margin-left: 25%;
+}
+
+

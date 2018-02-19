@@ -1,0 +1,259 @@
+{% load staticfiles %}
+{% load mathfilters %}
+<!DOCTYPE html>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{% static 'css/portfolio.css' %}">
+    <meta charset="UTF-8">
+    <title>Eagle Financial Services</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+    google.load("visualization", "1", {packages:["corechart"]});
+    </script>
+    <style>
+        /* Remove the navbar's default margin-bottom and rounded borders */
+        .navbar {
+            margin-bottom: 0;
+            border-radius: 0;
+        }
+
+        /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+        .row.content {
+            height: 450px
+        }
+
+        /* Set gray background color and 100% height */
+        .sidenav {
+            padding-top: 20px;
+            background-color: #f1f1f1;
+            height: 100%;
+        }
+
+        /* Set black background color, white text and some padding */
+        footer {
+            background-color: #555;
+            color: white;
+            padding: 15px;
+        }
+
+        /* On small screens, set height to 'auto' for sidenav and grid */
+        @media screen and (max-width: 767px) {
+            .sidenav {
+                height: auto;
+                padding: 15px;
+            }
+
+            .row.content {
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body class="body_own">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+
+            <!-- Collapsed Hamburger -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#myNavbar">
+                <span class="sr-only">Toggle Navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- Branding Image -->
+            <a class="navbar-brand" href="/">
+                Eagle Financial Services
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li><a href="{% url 'portfolio:home' %}">Home</a></li>
+                <li><a href="{% url 'portfolio:customer_list' %}">Customers</a></li>
+                <li><a href="{% url 'portfolio:investment_list' %}">Investments</a></li>
+                <li><a href="{% url 'portfolio:stock_list' %}">Stocks</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="{% url 'logout' %}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Welcome!</div>
+                <div class="panel-body">
+                    Eagle Financial Services, your Midwest Financial Services Partner.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row title">
+    <h1 style="text-align:center; color:#f1f7ed;">Customer Portfolio</h1>
+</div>
+
+
+<div class="row" style="margin-left:10%;">
+    <h2 >Overall Portfolio Performance</h2>
+</div>
+
+<table class="table_own table-striped table-bordered table-hover">
+        <thead>
+        <tr class="bg-info">
+
+            <th>Portfolio Initial Investments</th>
+            <th>Portfolio Current Investments</th>
+            <th>Grand Total Results</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ sum_acquired_value|add:sum_of_initial_stock_value }}</td>
+                <td>{{ sum_recent_value|add:sum_current_stocks_value }}</td>
+                <td>{{ sum_current_total|sub:sum_initial_total }}</td>
+            </tr>
+            <tr>
+                <td>{{ sum_initial_total_euros }}</td>
+                <td>{{ sum_current_total_euros }}</td>
+                <td>{{ sum_current_total_euros|sub:sum_initial_total_euros }}</td>
+            </tr>
+         <tr>
+                <td>{{ sum_initial_total_rubels }}</td>
+                <td>{{ sum_current_total_rubels }}</td>
+                <td>{{ sum_current_total_rubels|sub:sum_initial_total_rubels }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+<div id="chart">
+    {{ chart.as_html }}
+</div>
+
+<div class="row" style="margin-left:10%;">
+    <h2>Stocks Information</h2>
+</div>
+<div>
+    <table class="table_own table-striped table-bordered table-hover">
+        <thead>
+        <tr class="bg-info">
+
+            <th>Customer</th>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Shares</th>
+            <th>Initial Stock Price</th>
+            <th>Initial Stock Value</th>
+            <th>Current Stock Price</th>
+            <th>Current Stock Value</th>
+            <th>Results</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for stock in stocks %}
+            <tr>
+                <td>{{ stock.customer }}</td>
+                <td>{{ stock.symbol }}</td>
+                <td>{{ stock.name }}</td>
+                <td>{{ stock.shares }}</td>
+                <td>{{ stock.purchase_price }}</td>
+                <td>{{ stock.initial_stock_value }}</td>
+                <td>{{ stock.current_stock_price }}</td>
+                <td>{{ stock.current_stock_value}}</td>
+                <td>{{ stock.current_stock_value|sub:stock.initial_stock_value }}</td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table_own table-striped table-bordered table-hover">
+        <thead>
+        <tr class="bg-info">
+            <th>Total of Initial Stocks</th>
+            <th>Total of Current Stocks</th>
+            <th>Results</th>
+        </tr>
+        </thead>
+        <tr>
+            <td>{{ sum_of_initial_stock_value }} </td>
+            <td> {{ sum_current_stocks_value }}</td>
+            <td>{{ sum_current_stocks_value|sub:sum_of_initial_stock_value }}</td>
+        </tr>
+     </table>
+</div>
+
+<div class="row" style="margin-left:10%;">
+    <h2>Investment Information</h2>
+</div>
+
+<div>
+    <table class="table_own table-striped table-bordered table-hover">
+        <thead>
+        <tr class="bg-info">
+
+            <th>Customer</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Acquired Value</th>
+            <th>Acquired Date</th>
+            <th>Recent Value</th>
+            <th>Recent Date</th>
+            <th>Results</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for investment in investments %}
+            <tr>
+                <td>{{ investment.customer }}</td>
+                    <td>{{ investment.category }}</td>
+                    <td>{{ investment.description }}</td>
+                    <td>{{ investment.acquired_value }}</td>
+                    <td>{{ investment.acquired_date }}</td>
+                    <td>{{ investment.recent_value }}</td>
+                    <td>{{ investment.recent_date }}</td>
+                    <td>{{ investment.recent_value|sub:investment.acquired_value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="table_own table-striped table-bordered table-hover">
+        <thead>
+        <tr class="bg-info">
+            <th>Total of Initial Investments</th>
+            <th>Total of Current Investments</th>
+            <th>Results</th>
+        </tr>
+        </thead>
+        <tr>
+            <td>{{ sum_acquired_value }} </td>
+            <td> {{ sum_recent_value }}</td>
+            <td>{{ sum_recent_value|sub:sum_acquired_value }}</td>
+        </tr>
+     </table>
+</div>
+
